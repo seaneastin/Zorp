@@ -5,6 +5,9 @@
 #include <iostream>
 #include <windows.h>
 
+
+using namespace std;
+
 int main()
 {
 	const char* CSI = "\x1b["; //– this acronym stands for Control Sequence Introducer. 
@@ -26,60 +29,60 @@ int main()
 	int height = 0;
 	char firstLetterOfName = 0;
 	int avatarHP = 0;
-	std::cout << TITLE << MAGENTA <<"Welcome to ZORP!" << RESET_COLOR <<std::endl;
-	std::cout << INDENT << "ZORP is a game of adventure, danger, and low cunning." << std::endl;
-	std::cout << INDENT << "it is definitely not related to any other text-based adventure game." << std::endl << std::endl;
-	std::cout << INDENT << "First, some questions..." << std::endl;
+	cout << TITLE << MAGENTA <<"Welcome to ZORP!" << RESET_COLOR <<endl;
+	cout << INDENT << "ZORP is a game of adventure, danger, and low cunning." << endl;
+	cout << INDENT << "it is definitely not related to any other text-based adventure game." << endl << endl;
+	cout << INDENT << "First, some questions..." << endl;
 
 
 	//save cursor position
-	std::cout << SAVE_CURSOR_POS;
+	cout << SAVE_CURSOR_POS;
 
-	std::cout << INDENT <<"How tall are you, in centimeters?" << std::endl;
-	std::cin >> height;
+	cout << INDENT <<"How tall are you, in centimeters?" << std::endl;
+	cin >> height;
 	if (std::cin.fail())
 	{
-		std::cout << INDENT << "You have failed the first challenge are are eaten by a grue." << std::endl;
+		cout << INDENT << "You have failed the first challenge are are eaten by a grue." << endl;
 	}
 	else
 	{
-		std::cout << INDENT << "You entered " << height << std::endl;
+		cout << INDENT << "You entered " << height << endl;
 	}
 
 	//clear input buffer
-	std::cin.clear();
-	std::cin.ignore(std::cin.rdbuf()->in_avail());
-	std::cin.get();
+	cin.clear();
+	cin.ignore(cin.rdbuf()->in_avail());
+	cin.get();
 	//move the cursor to the start of the 1st question
-	std::cout << RESTORE_CURSOR_POS;
+	cout << RESTORE_CURSOR_POS;
 	//delete the next 4 lines of text
-	std::cout << CSI << "4M";
+	cout << CSI << "4M";
 
 
-	std::cout << INDENT << "What is the first letter of your name? " << INDENT << YELLOW;
+	cout << INDENT << "What is the first letter of your name? " << INDENT << YELLOW;
 
-	std::cin >> firstLetterOfName;
-	std::cout << RESET_COLOR << std::endl;
+	cin >> firstLetterOfName;
+	cout << RESET_COLOR << endl;
 
-	if (std::cin.fail() || !isalpha(firstLetterOfName))
+	if (cin.fail() || !isalpha(firstLetterOfName))
 	{
-		std::cout <<  INDENT <<"You have failed the second challenge and are eaten by a grue." << std::endl;
+		cout <<  INDENT <<"You have failed the second challenge and are eaten by a grue." << endl;
 	}
 	else
 	{
-		std::cout << INDENT <<"You entered " << firstLetterOfName << std::endl;
+		cout << INDENT <<"You entered " << firstLetterOfName << endl;
 	}
 
-	std::cin.clear();
-	std::cin.ignore(std::cin.rdbuf()->in_avail());
-	std::cin.get();
+	cin.clear();
+	cin.ignore(cin.rdbuf()->in_avail());
+	cin.get();
 
 
 	//move the curosr to the start of the 1st question
 
-	std::cout << RESTORE_CURSOR_POS;
-	std::cout << CSI << "A"; //cursor up 1
-	std::cout << CSI << "4m"; //DELETE THE NEXT 4 LINES OF TEXT
+	cout << RESTORE_CURSOR_POS;
+	cout << CSI << "A"; //cursor up 1
+	cout << CSI << "4m"; //DELETE THE NEXT 4 LINES OF TEXT
 
 	if (firstLetterOfName != 0)
 	{
@@ -91,11 +94,11 @@ int main()
 	}
 	
 
-	std::cout << INDENT << "Using a complex deterministic algorithm, it has been calculated that you have " << avatarHP << " hit point(s)." << std::endl;
+	cout << INDENT << "Using a complex deterministic algorithm, it has been calculated that you have " << avatarHP << " hit point(s)." << std::endl;
 
 
-	std::cout <<  std::endl << INDENT << "Press 'Enter' to exit the program." << std::endl;
-	std::cin.get();
+	cout <<  endl << INDENT << "Press 'Enter' to exit the program." << endl;
+	cin.get();
 	return 1;
 
 }
