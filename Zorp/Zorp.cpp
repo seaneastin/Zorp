@@ -31,8 +31,13 @@ const char* CYAN = "\x1b[96m"; //sets the text color to cyan
 const char* SAVE_CURSOR_POS = "\x1b[s"; //save’s the cursor’s current position to memory
 const char* RESTORE_CURSOR_POS = "\x1b[u"; //set the cursor to the last saved position.
 
+
+
 int main()
 {
+	bool gameOver = false;
+	int playerX = 0;
+	int playerY = 0;
 	const int EMPTY = 0;
 	const int ENEMY = 1;
 	const int TREASURE = 2;
@@ -44,8 +49,39 @@ int main()
 	const int MAZE_WIDTH = 10;
 	const int MAZE_HEIGHT = 6;
 
+	int height = 0;
+	char firstLetterOfName = 0;
+	int avatarHP = 0;
+
+
 	//create a 2D array
 	int rooms[MAZE_HEIGHT][MAZE_WIDTH];
+
+
+	const int INDENT_X = 5; //how many spaces to use to indent all text. This can also be used as a tab.
+	const int ROOM_DESC_Y = 8; //the line to use for our room descriptions. Each type of room will have a description. 
+	//For example, for the empty room the description
+	//will be “You are in an empty meadow. There is nothing of interest here.”
+	const int MAP_Y = 13; //the first line where the map is drawn.
+	const int PLAYER_INPUT_X = 5; //the character column where the player will type their input. 
+	const int PLAYER_INPUT_Y = 8; // the line where the player will type their input.
+
+	const int WEST = 4; //
+	const int EAST = 6; //
+	const int NORTH = 8; //
+	const int SOUTH = 2; //
+
+	// Set output mode to handle virtual terminal sequences
+	DWORD dwMode = 0;
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	GetConsoleMode(hOut, &dwMode);
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	SetConsoleMode(hOut, dwMode);
+
+
+
+
+
 
 	srand(time(nullptr));
 
@@ -68,29 +104,18 @@ int main()
 	rooms[MAZE_HEIGHT - 1][MAZE_WIDTH - 1] = EXIT;
 
 
-	// Set output mode to handle virtual terminal sequences
-	DWORD dwMode = 0;
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	GetConsoleMode(hOut, &dwMode);
-	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-	SetConsoleMode(hOut, dwMode);
-	int height = 0;
-	char firstLetterOfName = 0;
-	int avatarHP = 0;
+
 	cout << TITLE << MAGENTA <<"Welcome to ZORP!" << RESET_COLOR <<endl;
 	cout << INDENT << "ZORP is a game of adventure, danger, and low cunning." << endl;
 	cout << INDENT << "it is definitely not related to any other text-based adventure game." << endl << endl;
-	cout << INDENT << "First, some questions..." << endl;
 
 
 	//save cursor position
 	cout << SAVE_CURSOR_POS;
 
 	// output the map
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
+
+	cout << CSI << MAP_Y << ";" << 0 << "H";
 	for (int y = 0; y < MAZE_HEIGHT; y++)
 	{
 		cout << INDENT;
@@ -187,6 +212,129 @@ int main()
 	
 
 	cout << INDENT << "Using a complex deterministic algorithm, it has been calculated that you have " << avatarHP << " hit point(s)." << std::endl;
+	cout << endl << INDENT << "Press 'Enter' to continue";
+	cin.clear();
+	cin.ignore(cin.rdbuf()->in_avail());
+	cin.get();
+
+	while (!gameOver)
+	{
+		//prepare screen for output
+		//move curosr to start of the 1st Q, then up 1, delete and insert 4 lines
+
+		cout << RESTORE_CURSOR_POS << CSI << "A" << CSI << "4M" << CSI << "4L" << endl;
+		
+		//write description of current room
+
+		switch (rooms[playerY][playerX])
+		{
+		case EMPTY:
+			cout << INDENT << "You are in an empty meadow. There is nothing of note here." << endl;
+			break;
+		case ENEMY:
+			cout << INDENT << "BEWARE. An enemy is approaching." << endl;
+			break;
+		case TREASURE:
+			cout << INDENT << "Your journey has been rewardewd. You have found some treasure" << endl;
+			break;
+		case FOOD:
+			cout << INDENT << "At last! You collect some food to sustain you on your journey." << endl;
+			break;
+		case ENTRANCE:
+			cout << INDENT << "The entrance you used to enter this maze is blocked. There is no going back" << endl;
+			break;
+		case EXIT:
+			cout << INDENT << "Despite all odds, you made it to the exit. Congratulations." << endl;
+			gameOver = true;
+			continue;
+		}
+
+		cout << INDENT << "You can see paths leading to the " <<
+			((playerX > 0) ? "west, " : "") <<
+			((playerX < MAZE_WIDTH - 1) ? "east, " : "") <<
+			((playerY > 0) ? "north, " : "") <<
+			((playerY < MAZE_HEIGHT - 1) ? "south, " : "") << endl;
+
+		cout << INDENT << "Where to now?";
+
+		int x = INDENT_X + (6 * playerX) + 3;
+		int y = MAP_Y + playerY;
+
+		// draw the plaeyr's position on the map
+		// move cursor to map pos and delete character at current position
+
+		cout << CSI << y << ";" << x << "H";
+		cout << MAGENTA << "\x81";
+
+		// move cursor to position for player to enter input
+		cout << CSI << PLAYER_INPUT_Y << ";" << PLAYER_INPUT_X << "H" << YELLOW;
+
+		//clear the input buffer, ready for player input
+		cin.clear();
+		cin.ignore(cin.rdbuf()->in_avail());
+
+		int direction = 0;
+
+		cin >> direction;
+
+		cout << RESET_COLOR;
+
+		if (cin.fail())
+			continue;
+
+
+		//before updating the player position, redraw the old room character over
+		// the old position
+		cout << CSI << y << ";" << x << "H";
+
+		switch (rooms[playerY][playerX])
+		{
+		case EMPTY:
+			cout << GREEN << "\xb0" << RESET_COLOR;
+			break;
+		case ENEMY:
+			std::cout << RED << "\x94" << RESET_COLOR;
+			break;
+		case TREASURE:
+			std::cout <<YELLOW << "$" << RESET_COLOR;
+			break;
+		case FOOD:
+			std::cout<< CYAN << "\xcf" << RESET_COLOR;
+			break;
+		case ENTRANCE:
+			std::cout << WHITE << "\x9d" << RESET_COLOR;
+			break;
+		case EXIT:
+			std::cout << WHITE << "\xFE" << RESET_COLOR;
+			break;
+		}
+
+		switch (direction)
+		{
+		case EAST:
+			if (playerX < MAZE_WIDTH - 1)
+				playerX++;
+			break;
+		case WEST:
+			if (playerX > 0)
+				playerX--;
+			break;
+		case SOUTH:
+			if (playerY < MAZE_HEIGHT - 1)
+				playerY++;
+			break;
+		case NORTH:
+			if (playerY > 0)
+				playerY--;
+			break;
+
+		default:
+			//do nothing, go back to the top of the loop and ask again
+			break;
+		}
+
+	}
+
 
 
 	cout <<  endl << INDENT << "Press 'Enter' to exit the program.";
