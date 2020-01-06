@@ -140,11 +140,7 @@ int main()
 	// then delete and inster 4 lines
 	cout << RESTORE_CURSOR_POS << CSI << "A" << CSI << "4M" << CSI << "4L";
 
-	//move the curosr to the start of the 1st question
-
-	cout << RESTORE_CURSOR_POS;
-	cout << CSI << "A"; //cursor up 1
-	cout << CSI << "4M"; //DELETE THE NEXT 4 LINES OF TEXT
+	
 
 	if (firstLetterOfName != 0)
 	{
