@@ -10,6 +10,7 @@ using namespace std;
 
 int main()
 {
+	const char* ESC = "\x1b";
 	const char* CSI = "\x1b["; //– this acronym stands for Control Sequence Introducer. 
 	//This character sequence is at the start of every command we’ll pass to the console. 
 	//It’s defined here for situations where we can’t use a pre-defined command. 
@@ -82,7 +83,7 @@ int main()
 
 	cout << RESTORE_CURSOR_POS;
 	cout << CSI << "A"; //cursor up 1
-	cout << CSI << "4m"; //DELETE THE NEXT 4 LINES OF TEXT
+	cout << CSI << "4M"; //DELETE THE NEXT 4 LINES OF TEXT
 
 	if (firstLetterOfName != 0)
 	{
