@@ -11,6 +11,7 @@
 using namespace std;
 
 
+
 const char* ESC = "\x1b";  //put what this does sometime
 const char* CSI = "\x1b["; //– this acronym stands for Control Sequence Introducer. 
 //This character sequence is at the start of every command we’ll pass to the console. 
@@ -63,6 +64,15 @@ const int NORTH = 8; //
 const int SOUTH = 2; //
 const int LOOK = 9; //
 const int FIGHT = 10; //
+
+
+
+
+struct Point2D
+{
+	int x;
+	int y;
+};
 
 
 
@@ -136,15 +146,15 @@ int drawWelcomeMessage()
 	return 1;
 }
 
-int drawRoom(int map[MAZE_HEIGHT][MAZE_WIDTH], int x, int y)
+int drawRoom(int map[MAZE_HEIGHT][MAZE_WIDTH], Point2D position)
 {
 	//find the console output position
-	int outX = INDENT_X + (6 * x) + 1;
-	int outY = MAP_Y + y;
+	int outX = INDENT_X + (6 * position.x) + 1;
+	int outY = MAP_Y + position.y;
 
 	cout << CSI << outY << ";" << outX << "H";
 
-	switch (map[y][x])
+	switch (map[position.y][position.x])
 	{
 	case EMPTY:
 		std::cout << "[ " << GREEN << "\xb0" << RESET_COLOR << " ] ";
@@ -173,14 +183,15 @@ int drawRoom(int map[MAZE_HEIGHT][MAZE_WIDTH], int x, int y)
 
 int drawMap(int map[MAZE_HEIGHT][MAZE_WIDTH])
 {
+	Point2D position = { 0, 0 };
 	//reset draw colors
 	cout << RESET_COLOR;
-	for (int y = 0; y < MAZE_HEIGHT; y++)
+	for (position.y = 0; position.y < MAZE_HEIGHT; position.y++)
 	{
 		cout << INDENT;
-		for (int x = 0; x < MAZE_WIDTH; x++)
+		for (position.x = 0; position.x < MAZE_WIDTH; position.x++)
 		{
-			drawRoom(map, x, y);
+			drawRoom(map, position);
 		}
 	}
 	return 1;
@@ -223,30 +234,30 @@ int drawRoomDescription(int roomType)
 }
 
 
-int drawPlayer(int x, int y)
+int drawPlayer(Point2D position)
 {
-	x = INDENT_X + (6 * x) + 3;
-y = MAP_Y + y;
+	Point2D outPos = {
+		INDENT_X + (6 * position.x) + 3, MAP_Y + position.y };
 
 //draw the player's position on the map
 //move cursor to map pos and delete character at current position
-cout << CSI << y << ";" << x << "H";
+cout << CSI << outPos.y << ";" << outPos.x << "H";
 cout << MAGENTA << "\x81" << RESET_COLOR;
 return 1;
 }
 
 
-int drawValidDirections(int x, int y)
+int drawValidDirections(Point2D position)
 {
 	//reset draw colors
 	cout << RESET_COLOR;
 	// jump to the correct location
 	cout << CSI << MOVEMENT_DESC_Y + 1 << ";" << 0 << "H";
 	cout << INDENT << "You can see paths leading to the " <<
-		((x > 0) ? "west, " : "") <<
-		((x < MAZE_WIDTH - 1) ? "east, " : "") <<
-		((y > 0) ? "north, " : "") <<
-		((y < MAZE_HEIGHT - 1) ? "south, " : "") << endl;
+		((position.x > 0) ? "west, " : "") <<
+		((position.x < MAZE_WIDTH - 1) ? "east, " : "") <<
+		((position.y > 0) ? "north, " : "") <<
+		((position.y < MAZE_HEIGHT - 1) ? "south, " : "") << endl;
 
 	return 1;
 }
@@ -346,8 +357,9 @@ int main()
 
 
 	bool gameOver = false;
-	int playerX = 0;
-	int playerY = 0;
+
+
+	Point2D player = { 0, 0 };
 
 
 	int height = 0;
@@ -382,54 +394,54 @@ int main()
 	while (!gameOver)
 	{
 
-		drawRoomDescription(rooms[playerY][playerX]);
+		drawRoomDescription(rooms[player.y][player.x]);
 
 
-		drawPlayer(playerX, playerY);
+		drawPlayer(player);
 
-		if (rooms[playerY][playerX] == EXIT)
+		if (rooms[player.y][player.x] == EXIT)
 		{
 			gameOver = true;
 			continue;
 		}
 
 		//list the direction the player can take
-		drawValidDirections(playerX, playerY);
+		drawValidDirections(player);
 		int command = getCommand();
 
 
 		//before updating the player position, redraw the old room
 		// character over the old position
 
-		drawRoom(rooms, playerX, playerY);
+		drawRoom(rooms, player);
 
 		//update the player's position using the input movement data
 		switch (command)
 		{
 		case EAST:
-			if (playerX < MAZE_WIDTH - 1)
-				playerX++;
+			if (player.x < MAZE_WIDTH - 1)
+				player.x++;
 			break;
 		case WEST:
-			if (playerX > 0)
-				playerX--;
+			if (player.x > 0)
+				player.x--;
 			break;
 		case SOUTH:
-			if (playerY < MAZE_HEIGHT - 1)
-				playerY++;
+			if (player.y < MAZE_HEIGHT - 1)
+				player.y++;
 			break;
 		case NORTH:
-			if (playerY > 0)
-				playerY--;
+			if (player.y > 0)
+				player.y--;
 			break;
 		case LOOK:
-			drawPlayer(playerX, playerY);
+			drawPlayer(player);
 			cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You look around, but see nothing worth mentioning" << endl;
 			cout << INDENT << "Press 'ENTER' to continue.";
 			cin.clear();
 			cin.ignore(cin.rdbuf()->in_avail());
 		case FIGHT:
-			drawPlayer(playerX, playerY);
+			drawPlayer(player);
 			cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You could try to fight, but you don't have a weapon" << endl;
 			cout << INDENT << "Pres 'ENTER' to continue.";
 			cin.clear();
@@ -440,6 +452,12 @@ int main()
 		default:
 			//the direction was not valid
 			//do nothing, go back to the top of the loop and ask again
+			drawPlayer(player);
+			cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You try, but you just can't do it." << endl;
+
+			cout << INDENT << "Press 'Enter' to continue.";
+			cin.clear();
+			cin.ignore(cin.rdbuf() -> in_avail());
 			break;
 		}
 
