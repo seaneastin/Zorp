@@ -51,7 +51,7 @@ const int MOVEMENT_DESC_Y = 9;
 const int MAP_Y = 13; //the first line where the map is drawn.
 
 
-const char* EXTRA_OUTPUT_POS = "\1b[25;6H";
+const char* EXTRA_OUTPUT_POS = "\x1b[25;6H";
 
 const int PLAYER_INPUT_X = 30; //the character column where the player will type their input. 
 const int PLAYER_INPUT_Y = 23; // the line where the player will type their input.
@@ -458,6 +458,7 @@ int main()
 			cout << INDENT << "Press 'Enter' to continue.";
 			cin.clear();
 			cin.ignore(cin.rdbuf() -> in_avail());
+			cin.get();
 			break;
 		}
 
