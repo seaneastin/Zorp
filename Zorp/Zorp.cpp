@@ -48,13 +48,24 @@ const int ROOM_DESC_Y = 8; //the line to use for our room descriptions. Each typ
 const int MOVEMENT_DESC_Y = 9;
 
 const int MAP_Y = 13; //the first line where the map is drawn.
-const int PLAYER_INPUT_X = 30; //the character column where the player will type their input. 
-const int PLAYER_INPUT_Y = 11; // the line where the player will type their input.
 
+
+const char* EXTRA_OUTPUT_POS = "\1b[25;6H";
+
+const int PLAYER_INPUT_X = 30; //the character column where the player will type their input. 
+const int PLAYER_INPUT_Y = 23; // the line where the player will type their input.
+
+
+//input commands
 const int WEST = 4; //
 const int EAST = 6; //
 const int NORTH = 8; //
 const int SOUTH = 2; //
+const int LOOK = 9; //
+const int FIGHT = 10; //
+
+
+
 
 bool enableVirtualTerminal()
 {
@@ -265,6 +276,68 @@ int getMovementDirection()
 
 }
 
+
+int getCommand()
+{
+	//for now, we can't read commands longer than 50 characters
+	char input[50] = "\0";
+	// jump to the correct location
+	cout << CSI << PLAYER_INPUT_Y << ";" << 0 << "H";
+	//clear any existing text
+	cout << CSI << "4M";
+
+	cout << INDENT << "Enter a command.";
+
+	//move cursor to position for player to enter input
+	cout << CSI << PLAYER_INPUT_Y << ";" << PLAYER_INPUT_X << "H" << YELLOW;
+
+
+	//clear the input buffer, ready for player input
+
+	cin.clear();
+	cin.ignore(cin.rdbuf()->in_avail());
+
+	cin >> input;
+	cout << RESET_COLOR;
+
+
+	bool bMove = false;
+	while (input)
+	{
+		if (strcmp(input, "move") == 0)
+		{
+			bMove = true;
+		}
+		else if (bMove == true)
+		{
+			if (strcmp(input, "north") == 0)
+				return NORTH;
+			if (strcmp(input, "south") == 0)
+				return SOUTH;
+			if (strcmp(input, "east") == 0)
+				return EAST;
+			if (strcmp(input, "west") == 0)
+				return WEST;
+		}
+		if (strcmp(input, "look") == 0)
+		{
+			return LOOK;
+		}
+		if (strcmp(input, "fight") == 0)
+		{
+			return FIGHT;
+		}
+
+		char next = cin.peek();
+		if (next == '\n' || next == EOF)
+			break;
+		cin >> input;
+
+	}
+	return 0;
+
+}
+
 int main()
 {
 
@@ -322,7 +395,7 @@ int main()
 
 		//list the direction the player can take
 		drawValidDirections(playerX, playerY);
-		int direction = getMovementDirection();
+		int command = getCommand();
 
 
 		//before updating the player position, redraw the old room
@@ -331,7 +404,7 @@ int main()
 		drawRoom(rooms, playerX, playerY);
 
 		//update the player's position using the input movement data
-		switch (direction)
+		switch (command)
 		{
 		case EAST:
 			if (playerX < MAZE_WIDTH - 1)
@@ -348,6 +421,20 @@ int main()
 		case NORTH:
 			if (playerY > 0)
 				playerY--;
+			break;
+		case LOOK:
+			drawPlayer(playerX, playerY);
+			cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You look around, but see nothing worth mentioning" << endl;
+			cout << INDENT << "Press 'ENTER' to continue.";
+			cin.clear();
+			cin.ignore(cin.rdbuf()->in_avail());
+		case FIGHT:
+			drawPlayer(playerX, playerY);
+			cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You could try to fight, but you don't have a weapon" << endl;
+			cout << INDENT << "Pres 'ENTER' to continue.";
+			cin.clear();
+			cin.ignore(cin.rdbuf()->in_avail());
+			cin.get();
 			break;
 
 		default:
