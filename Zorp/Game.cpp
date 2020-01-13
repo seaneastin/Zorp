@@ -6,9 +6,9 @@
 #include <time.h>
 
 
-Game::Game()
+Game::Game() : m_gameOver{ false }
 {
-	m_gameOver = false;
+
 }
 
 

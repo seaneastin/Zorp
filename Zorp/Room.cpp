@@ -3,11 +3,9 @@
 #include <iostream>
 #include "GameDefines.h"
 
-Room::Room()
+Room::Room() : m_type(EMPTY), m_mapPosition(Point2D{0,0})
 {
-	m_type = EMPTY;
-	m_mapPosition.x = 0;
-	m_mapPosition.y = 0;
+
 }
 
 
