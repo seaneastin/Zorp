@@ -45,7 +45,9 @@ void Room::draw()
 	case ENEMY:
 		std::cout << "[ " << RED << "\x94" << RESET_COLOR << " ] ";
 		break;
-	case TREASURE:
+	case TREASURE_HP:
+	case TREASURE_AT:
+	case TREASURE_DF:
 		std::cout << "[ " << YELLOW << "$" << RESET_COLOR << " ] ";
 		break;
 	case FOOD:
@@ -92,26 +94,42 @@ int Room::drawDescription()
 		break;
 	case EXIT:
 		std::cout << INDENT << "Despite all odds, you made it to the exit. Congratulations." << std::endl;
+	case TREASURE_HP:
+	case TREASURE_AT:
+	case TREASURE_DF:
+		std::cout << INDENT << "There appears to be some treasure here. Perhaps you should investigate futher." << std::endl;
+		break;
 	}
+	
 	return 1;
 }
 
 bool Room::executeCommand(int command)
 {
+	std::cout << EXTRA_OUTPUT_POS;
 	switch (command)
 	{
 	case LOOK:
-		std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You look around, but see nothing worth mentioning" << std::endl;
+		if (m_type == TREASURE_HP || m_type == TREASURE_AT || m_type == TREASURE_DF)
+		{
+			std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "THRE is osme treasure here. It looks small enough to pick up." << std::endl;
+		}
+
+		else
+		{
+			std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You look around, but see nothing worth mentioning" << std::endl;
+		}
 		std::cout << INDENT << "Press 'ENTER' to continue.";
 		std::cin.clear();
 		std::cin.ignore(std::cin.rdbuf()->in_avail());
+		return true;
 	case FIGHT:
 		std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You could try to fight, but you don't have a weapon" << std::endl;
 		std::cout << INDENT << "Pres 'ENTER' to continue.";
 		std::cin.clear();
 		std::cin.ignore(std::cin.rdbuf()->in_avail());
 		std::cin.get();
-		break;
+		return true;
 
 	default:
 		//the direction was not valid

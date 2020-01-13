@@ -47,7 +47,7 @@ void Game::update()
 	}
 	int command = getCommand();
 
-	if (m_player.executeCommand(command))
+	if (m_player.executeCommand(command, m_map[playerPos.y][playerPos.x].getType()))
 		return;
 
 	m_map[playerPos.y][playerPos.x].executeCommand(command);
@@ -113,7 +113,11 @@ void Game::initializeMap()
 
 			int type = rand() % (MAX_RANDOM_TYPE * 2);
 			if (type < MAX_RANDOM_TYPE)
+			{
+				if (type == TREASURE)
+					type = rand() % 3 + TREASURE_HP;
 				m_map[y][x].setType(type);
+			}
 			else
 				m_map[y][x].setType(EMPTY);
 			m_map[y][x].setPosition(Point2D{ x, y });
@@ -172,6 +176,9 @@ int Game::getCommand()
 	std::cout << CSI << PLAYER_INPUT_Y << ";" << 0 << "H";
 	//clear any existing text
 	std::cout << CSI << "4M";
+	
+	// insert 4 blank lines to ensure the inventory output remains correct
+	std::cout << CSI << "4L";
 
 	std::cout << INDENT << "Enter a command.";
 
@@ -189,6 +196,7 @@ int Game::getCommand()
 
 
 	bool bMove = false;
+	bool bPickup = false;
 	while (input)
 	{
 		if (strcmp(input, "move") == 0)
@@ -214,6 +222,16 @@ int Game::getCommand()
 		{
 			return FIGHT;
 		}
+		if (strcmp(input, "pick") == 0)
+		{
+			bPickup = true;
+		}
+		else if (bPickup == true)
+		{
+			if (strcmp(input, "up") == 0)
+				return PICKUP;
+		}
+		
 
 		char next = std::cin.peek();
 		if (next == '\n' || next == EOF)
