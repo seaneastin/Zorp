@@ -6,6 +6,9 @@
 Powerup::Powerup(const char name[30], float health, float attack, float defence) //implement the rest of this constructor
 {
 	strcpy_s(m_name, name);
+	m_healthMultiplier = health;
+	m_attackMultiplier = attack;
+	m_defenceMultiplier = defence;
 }
 
 Powerup::~Powerup()
@@ -20,7 +23,7 @@ char * Powerup::getName()
 
 float Powerup::getHealthMultiplier()
 {
-	return m_healthMultiplier
+	return m_healthMultiplier;
 }
 
 float Powerup::getAttackMultiplier()
@@ -30,5 +33,5 @@ float Powerup::getAttackMultiplier()
 
 float Powerup::getDefenceMultiplier()
 {
-	return getDefenceMultiplier;
+	return m_defenceMultiplier;
 }
