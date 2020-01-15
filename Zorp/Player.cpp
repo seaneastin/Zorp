@@ -2,8 +2,7 @@
 #include "GameDefines.h"
 #include "Room.h"
 #include "Player.h"
-
-
+#include <algorithm>
 
 Player::Player() : m_mapPosition{0,0}, m_healthPoints{100}, m_attackPoints{20}, m_defendPoints{20}
 {
@@ -109,6 +108,8 @@ bool Player::pickup(int roomType)
 		"YOU pick up the " << name << std::endl;
 	m_powerups.push_back(Powerup(name, 1, 1, 1.1f));
 
+	std::sort(m_powerups.begin(), m_powerups.end(), Powerup::compare);
+	
 	std::cout << INDENT << "Press 'Enter' to continue.";
 	std::cin.clear();
 	std::cin.ignore(std::cin.rdbuf()->in_avail());
