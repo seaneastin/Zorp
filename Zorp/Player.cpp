@@ -105,6 +105,10 @@ void Player::attack(Enemy * pEnemy)
 		else
 		{
 			int damage = pEnemy->getAT() - m_defendPoints;
+			if (damage < 0)
+			{
+				damage = 0;
+			}
 				m_healthPoints -= damage;
 
 			std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You fight a grue and take " << damage << " points damage. Your health is now at " << m_healthPoints << std::endl;
@@ -167,13 +171,15 @@ void Player::executeCommand(int command, Room* pRoom)
 		//do nothing, go back to the top of the loop and ask again
 		std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You try, but you just can't do it." << std::endl;
 
-		std::cout << INDENT << "Press 'Enter' to continue.";
-		std::cin.clear();
-		std::cin.ignore(std::cin.rdbuf()->in_avail());
-		std::cin.get();
+		
 		break;
 		}
+
 		return;
 	}
+	std::cout << INDENT << "Press 'Enter' to continue.";
+	std::cin.clear();
+	std::cin.ignore(std::cin.rdbuf()->in_avail());
+	std::cin.get();
 }
 

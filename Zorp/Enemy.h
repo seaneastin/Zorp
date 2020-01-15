@@ -3,7 +3,7 @@
 class Enemy
 {
 public:
-	Enemy() : m_healthPoints{ 20 }, m_attackPoints{ 10 }, m_defendPoints{ 5 }  {}
+	Enemy() : m_healthPoints{ 1000 }, m_attackPoints{ 10 }, m_defendPoints{ 5 }  {}
 	~Enemy() {};
 
 	void setPosition(const Point2D& position) { m_mapPosition = position; }
