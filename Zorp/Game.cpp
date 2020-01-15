@@ -47,10 +47,16 @@ void Game::update()
 	}
 	int command = getCommand();
 
-	if (m_player.executeCommand(command, &m_map[playerPos.y][playerPos.x]))
+	if (command == QUIT)
+	{
+		m_gameOver = true;
+		return;
+	}
+
+	if (m_player.executeCommand(command))
 		return;
 
-	m_map[playerPos.y][playerPos.x].executeCommand(command);
+	m_map[playerPos.y][playerPos.x].executeCommand(command, &m_player);
 }
 
 void Game::draw()
@@ -221,6 +227,10 @@ int Game::getCommand()
 		if (strcmp(input, "fight") == 0)
 		{
 			return FIGHT;
+		}
+		if (strcmp(input, "exit") == 0)
+		{
+			return QUIT;
 		}
 		if (strcmp(input, "pick") == 0)
 		{

@@ -3,6 +3,7 @@
 #include "Room.h"
 #include "Player.h"
 #include <algorithm>
+#include "Powerup.h"
 
 Player::Player() : m_mapPosition{0,0}, m_healthPoints{100}, m_attackPoints{20}, m_defendPoints{20}
 {
@@ -17,6 +18,16 @@ Player::Player(int x, int y) : m_mapPosition{ x , y}, m_healthPoints{ 100 }, m_a
 
 Player::~Player()
 {
+	for (auto it = m_powerups.begin(); it != m_powerups.end(); it++) {
+		delete *it;
+	}
+	m_powerups.clear();
+}
+
+void Player::addPowerup(Powerup * pPowerup)
+{
+	m_powerups.push_back(pPowerup);
+	std::sort(m_powerups.begin(), m_powerups.end(), Powerup::compare);
 }
 
 void Player::setPosition(Point2D position)
@@ -46,13 +57,13 @@ void Player::draw()
 	std::cout << INVENTORY_OUTPUT_POS;
 	for (auto it = m_powerups.begin(); it < m_powerups.end(); it++)
 	{
-		std::cout << (*it).getName() << "\t";
+		std::cout << (*it)->getName() << "\t";
 	}
 
 }
 
 
-bool Player::executeCommand(int command, Room* room)
+bool Player::executeCommand(int command)
 {
 
 	switch (command)
@@ -73,49 +84,7 @@ bool Player::executeCommand(int command, Room* room)
 		if (m_mapPosition.y < MAZE_HEIGHT - 1)
 			m_mapPosition.y++;
 		return true;
-	case PICKUP:
-		return pickup(room);
 	}
 	return false;
 }
 
-bool Player::pickup( Room* room)
-{
-	static const char itemNames[15][30] = { "indifference", "invisibility", "invulnerability", "incontinence",
-											"improbability", "impatience", "indecision", "inspiration",
-											"independence", "incurability", "integration", "invocation",
-											"inferno", "indigestion", "inoculation" };
-	int item = rand() % 15;
-	char name[30] = "";
-
-	switch(room->getType())
-	{
-	case TREASURE_HP:
-		strcpy_s(name, "potion of ");
-		break;
-	case TREASURE_AT:
-		strcpy_s(name, "sword of ");
-		break;
-	case TREASURE_DF:
-		strcpy_s(name, "shield of ");
-		break;
-	default:
-		return false;
-	}
-	// append the item name to the string
-	strncat_s(name, itemNames[item], 30);
-	std::cout << EXTRA_OUTPUT_POS << RESET_COLOR <<
-		"YOU pick up the " << name << std::endl;
-	m_powerups.push_back(Powerup(name, 1, 1, 1.1f));
-
-	std::sort(m_powerups.begin(), m_powerups.end(), Powerup::compare);
-	//set the room to EMPTY
-	room->setType(EMPTY);
-
-
-	std::cout << INDENT << "Press 'Enter' to continue.";
-	std::cin.clear();
-	std::cin.ignore(std::cin.rdbuf()->in_avail());
-	std::cin.get();
-	return true;
-}

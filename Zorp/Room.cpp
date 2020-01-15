@@ -1,7 +1,21 @@
 #include "pch.h"
 #include "Room.h"
+#include "Powerup.h"
+#include "Player.h"
 #include <iostream>
 #include "GameDefines.h"
+
+
+static const char itemNames[15][30] =
+{
+
+	 "indifference", "invisibility", "invulnerability", "incontinence",
+	"improbability", "impatience", "indecision", "inspiration",
+	"independence", "incurability", "integration", "invocation",
+	"inferno", "indigestion", "inoculation"
+
+};
+
 
 Room::Room() : m_type(EMPTY), m_mapPosition(Point2D{0,0})
 {
@@ -11,6 +25,8 @@ Room::Room() : m_type(EMPTY), m_mapPosition(Point2D{0,0})
 
 Room::~Room()
 {
+	if (m_powerup != nullptr)
+		delete m_powerup;
 }
 
 void Room::setPosition(Point2D position)
@@ -21,6 +37,38 @@ void Room::setPosition(Point2D position)
 void Room::setType(int type)
 {
 	m_type = type;
+
+	if (!(m_type == TREASURE_HP || m_type == TREASURE_AT || m_type == TREASURE_DF))
+		return;
+	if (m_powerup != nullptr)
+		return;
+
+	int item = rand() % 15;
+
+	char name[30] = "";
+
+
+	float HP = 1;
+	float AT = 1;
+	float DF = 1;
+
+	switch (type)
+	{
+	case TREASURE_HP:
+		strcpy_s(name, "potion of ");
+		HP = 1.1f;
+		break;
+	case TREASURE_AT:
+		strcpy_s(name, "sword of ");
+		AT = 1.1f;
+		break;
+	case TREASURE_DF:
+		strcpy_s(name, "shield of ");
+		DF = 1.1f;
+		break;
+	}
+	strncat_s(name, itemNames[item], 30);
+	m_powerup = new Powerup(name, HP, AT, DF);
 }
 
 int Room::getType()
@@ -103,7 +151,35 @@ int Room::drawDescription()
 	return 1;
 }
 
-bool Room::executeCommand(int command)
+bool Room::pickup(Player * pPlayer)
+{
+	if (m_powerup == nullptr)
+	{
+		std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "There is nothing here to pick up." << std::endl;
+		return true;
+	}
+
+	std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You pick up the " << m_powerup->getName() << std::endl;
+
+
+	//add the powerup to the player's inventory
+	pPlayer->addPowerup(m_powerup);
+
+	//remove the powerup from the room
+	// (but don't delete it, the player owns it now
+	m_powerup = nullptr;
+
+	//change this room type to empty
+	m_type = EMPTY;
+
+	std::cout << INDENT << "Press 'Enter' to continue.";
+	std::cin.clear();
+	std::cin.ignore(std::cin.rdbuf()->in_avail());
+	std::cin.get();
+	return true;
+}
+
+bool Room::executeCommand(int command, Player* pPlayer)
 {
 	std::cout << EXTRA_OUTPUT_POS;
 	switch (command)
@@ -129,6 +205,9 @@ bool Room::executeCommand(int command)
 		std::cin.ignore(std::cin.rdbuf()->in_avail());
 		std::cin.get();
 		return true;
+
+	case PICKUP:
+		return pickup(pPlayer);
 
 	default:
 		//the direction was not valid
