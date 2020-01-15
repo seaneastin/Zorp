@@ -34,6 +34,7 @@ bool Game::startup()
 	srand(time(nullptr));
 
 	initializeMap();
+	initializePowerups();
 	initializeEnemies();
 	initializeFood();
 
