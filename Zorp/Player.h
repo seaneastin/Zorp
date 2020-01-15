@@ -20,11 +20,11 @@ public:
 
 
 
-	bool executeCommand(int command, int roomType);
+	bool executeCommand(int command, Room* pRoom);
 
 
 private:
-	bool pickup(int roomType);
+	bool pickup(Room* room);
 
 	Point2D m_mapPosition;
 

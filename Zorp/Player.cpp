@@ -52,7 +52,7 @@ void Player::draw()
 }
 
 
-bool Player::executeCommand(int command, int roomType)
+bool Player::executeCommand(int command, Room* room)
 {
 
 	switch (command)
@@ -74,12 +74,12 @@ bool Player::executeCommand(int command, int roomType)
 			m_mapPosition.y++;
 		return true;
 	case PICKUP:
-		return pickup(roomType);
+		return pickup(room);
 	}
 	return false;
 }
 
-bool Player::pickup(int roomType)
+bool Player::pickup( Room* room)
 {
 	static const char itemNames[15][30] = { "indifference", "invisibility", "invulnerability", "incontinence",
 											"improbability", "impatience", "indecision", "inspiration",
@@ -88,7 +88,7 @@ bool Player::pickup(int roomType)
 	int item = rand() % 15;
 	char name[30] = "";
 
-	switch(roomType)
+	switch(room->getType())
 	{
 	case TREASURE_HP:
 		strcpy_s(name, "potion of ");
@@ -109,7 +109,10 @@ bool Player::pickup(int roomType)
 	m_powerups.push_back(Powerup(name, 1, 1, 1.1f));
 
 	std::sort(m_powerups.begin(), m_powerups.end(), Powerup::compare);
-	
+	//set the room to EMPTY
+	room->setType(EMPTY);
+
+
 	std::cout << INDENT << "Press 'Enter' to continue.";
 	std::cin.clear();
 	std::cin.ignore(std::cin.rdbuf()->in_avail());

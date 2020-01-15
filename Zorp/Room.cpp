@@ -26,7 +26,6 @@ void Room::setType(int type)
 int Room::getType()
 {
 	return m_type;
-	return 0;
 }
 
 void Room::draw()
