@@ -3,6 +3,14 @@
 #include <cstring>
 
 
+Powerup::Powerup() : m_healthMultiplier{ 1 }, m_attackMultiplier{ 1 },
+m_defenceMultiplier{ 1 }
+{
+	m_name[0] = 0;
+}
+
+
+
 Powerup::Powerup(const char name[30], float health, float attack, float defence) //implement the rest of this constructor
 {
 	strcpy_s(m_name, name);
@@ -34,6 +42,11 @@ float Powerup::getAttackMultiplier()
 float Powerup::getDefenceMultiplier()
 {
 	return m_defenceMultiplier;
+}
+
+void Powerup::setName(const char * pStr)
+{
+	strncpy_s(m_name, pStr, 30);
 }
 
 bool Powerup::compare(const Powerup* p1, const Powerup* p2)
