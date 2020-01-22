@@ -65,12 +65,12 @@ void Game::update()
 
 	m_player.executeCommand(command, &m_map[playerPos.y][playerPos.x]);
 
-	for (int i = 0; i < m_enemyCount; i++)
+ 	for (int i = 0; i < m_enemyCount; i++)
 	{
 		if (m_enemies[i].isAlive() == false)
 		{
 			Point2D pos = m_enemies[i].getPosition();
-			m_map[pos.y][pos.x].addGameObject(nullptr);
+			m_map[pos.y][pos.x].removeGameObject(&m_enemies[i]);
 		}
 	}
 }

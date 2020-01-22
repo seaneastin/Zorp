@@ -11,7 +11,7 @@ Enemy::Enemy() : Character({ 0,0 }, 20, 10, 5)
 
 void Enemy::onAttacked(int attackPoints)
 {
-	m_healthPoints -= attackPoints - m_defendPoints;
+	m_healthPoints = attackPoints - m_defendPoints;
 	if (m_healthPoints < 0)
 		m_healthPoints = 0;
 }
