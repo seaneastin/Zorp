@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject.h"
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 class Powerup;
 
@@ -23,6 +25,8 @@ public:
 	int getDF() { return m_defendPoints; }
 
 	bool isAlive() { return (m_healthPoints > 0); }
+
+	void save(std::ofstream& out);
 
 protected:
 	std::vector<Powerup*> m_powerups;

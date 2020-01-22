@@ -7,6 +7,7 @@
 #include "Enemy.h"
 #include "Food.h"
 #include "Powerup.h"
+#include <fstream>
 
 Game::Game() : m_gameOver{ false }
 {
@@ -214,6 +215,7 @@ void Game::initializePowerups()
 			}
 			strncat_s(name, itemNames[(rand() % 15)], 30);
 			m_powerups[i].setName(name);
+			m_powerups[i].setPosition(Point2D{ x, y });
 			m_map[y][x].addGameObject(&m_powerups[i]);
 		}
 	}
@@ -233,6 +235,7 @@ void Game::initializeFood()
 	{
 		int x = rand() % (MAZE_WIDTH - 1);
 		int y = rand() % (MAZE_HEIGHT - 1);
+		m_food[i].setPosition(Point2D{ x, y });
 		m_map[y][x].addGameObject(&m_food[i]);
 	}
 }
@@ -343,6 +346,15 @@ int Game::getCommand()
 			if (strcmp(input, "up") == 0)
 				return PICKUP;
 		}
+
+		if (strcmp(input, "save") == 0)
+		{
+			//process the save command here, as the game class is
+			// the only calss with direct access to all the game obje cts
+
+			save();
+			return SAVE;
+		}
 		
 
 		char next = std::cin.peek();
@@ -353,4 +365,56 @@ int Game::getCommand()
 	}
 	return 0;
 
+}
+
+void Game::save()
+{
+	std::ofstream out;
+
+	// open the file for output, and truncate (any contents that
+	// existed in the file before it is open are discarded)
+	out.open("zorp_savegame.txt", std::ofstream::out | std::ofstream::trunc);
+
+	if (out.is_open())
+	{
+		//save the position of every game object, and the player's stats
+
+		if (m_gameOver == true)
+		{
+			std::cout << EXTRA_OUTPUT_POS <<
+				"You have perished. Saving will not save you." << std::endl; 
+			std::cout << INDENT << "Your progress has not been saved." << RESET_COLOR << std::endl;
+		}
+		else
+		{
+			//output the powerups first, as ethese will need to be loaded before
+			//we load any characters (so we can correctly copy the powerup pointers
+			// to the characters' powerup list)
+
+			out << m_powerupCount << std::endl;
+			for (int i = 0; i < m_powerupCount; i++)
+			{
+				m_powerups[i].save(out);
+			}
+
+			out << m_enemyCount << std::endl;
+			for (int i = 0; i < m_enemyCount; i++)
+			{
+				m_enemies[i].save(out);
+			}
+
+			out << m_foodCount << std::endl;
+			for (int i = 0; i < m_foodCount; i++)
+			{
+				m_food[i].save(out);
+			}
+
+			m_player.save(out);
+		}
+	}
+	else
+	{
+		std::cout << EXTRA_OUTPUT_POS << RED << "A grue has corrupted the scroll of rememberance." << std::endl;
+		std::cout << INDENT << "Your progress has not been saved." << RESET_COLOR << std::endl;
+	}
 }

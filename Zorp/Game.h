@@ -33,6 +33,9 @@ private:
 
 	int getCommand();
 
+	void save();
+
+
 private:
 	bool m_gameOver;
 	Room m_map[MAZE_HEIGHT][MAZE_WIDTH];

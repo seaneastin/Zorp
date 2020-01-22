@@ -3,6 +3,7 @@
 #include "GameDefines.h"
 #include <cstring>
 #include <iostream>
+#include <fstream>
 
 
 Powerup::Powerup() : m_healthMultiplier{ 1 }, m_attackMultiplier{ 1 },
@@ -75,3 +76,20 @@ void Powerup::lookAt()
 {
 	std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "There is some treasure here. it looks small enough to pick up.";
 }
+
+void Powerup::save(std::ofstream & out)
+{
+	if (!out.is_open())
+		return;
+
+
+	out << m_priority << ",";
+	out << m_mapPosition.x << ",";
+	out << m_mapPosition.y << ",";
+	out << m_name << ",";
+	out << m_healthMultiplier << ",";
+	out << m_attackMultiplier << ",";
+	out << m_defenceMultiplier << std::endl;
+}
+
+
