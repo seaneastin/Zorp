@@ -22,6 +22,13 @@ const char* const EXTRA_OUTPUT_POS = "\x1b[21;6H";
 const char* const INVENTORY_OUTPUT_POS = "\x1b[24;6H";
 
 
+const int PRIORITY_DEFAULT = 5;
+const int PRIORITY_PLAYER = 0;
+const int PRIORITY_ENEMY = 1;
+const int PRIORITY_POWERUP = 2;
+const int PRIORITY_FOOD = 3;
+
+
 const int EMPTY = 0;
 
 

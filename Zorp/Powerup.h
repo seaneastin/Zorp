@@ -1,5 +1,6 @@
 #pragma once
-class Powerup
+#include "GameObject.h"
+class Powerup : public GameObject
 {
 public:
 	Powerup();
@@ -19,6 +20,10 @@ public:
 
 
 	static bool compare(const Powerup* p1, const Powerup* p2);
+
+	void draw();
+	void drawDescription();
+	void lookAt();
 
 private:
 	char m_name[30];
