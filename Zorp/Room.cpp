@@ -50,6 +50,7 @@ void Room::removeGameObject(GameObject* object)
 		if (*it == object)
 		{
 			//reset the objects room number
+			//there is an error with this line
 			(*it)->setPosition(Point2D{ -1,-1 });
 			m_objects.erase(it);
 			return;
