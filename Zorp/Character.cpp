@@ -23,7 +23,7 @@ Character::Character(Point2D position, int health, int attack, int defend) :
 Character::~Character()
 {}
 
-bool Character::load(std::ifstream & in, const Game* game)
+bool Character::load(std::ifstream & in, const Game* game,int* lineCount)
 {
 	if (!in.is_open())
 	return false;
@@ -31,42 +31,49 @@ bool Character::load(std::ifstream & in, const Game* game)
 	char buffer[50] = { 0 };
 
 	in.get(buffer, 50, ',');
+	*lineCount++;
 	if (in.rdstate() || buffer[0] == 0)
 		return false;
 	m_priority = std::stoi(buffer);
 
 	in.ignore(1);
 	in.get(buffer, 50, ',');
+	*lineCount++;
 	if (in.rdstate() || buffer[0] == 0)
 		return false;
 	m_mapPosition.x = std::stoi(buffer);
 
 	in.ignore(1);
 	in.get(buffer, 50, ',');
+	*lineCount++;
 	if (in.rdstate() || buffer[0] == 0)
 		return false;
 	m_mapPosition.y = std::stoi(buffer);
 
 	in.ignore(1);
 	in.get(buffer, 50, ',');
+	*lineCount++;
 	if (in.rdstate() || buffer[0] == 0)
 			return false;
 	m_healthPoints = std::stoi(buffer);
 
 	in.ignore(1);
 	in.get(buffer, 50, ',');
+	*lineCount++;
 	if (in.rdstate() || buffer[0] == 0)
 		return false;
 	m_attackPoints = std::stoi(buffer);
 
 	in.ignore(1);
 	in.get(buffer, 50, ',');
+	*lineCount++;
 	if (in.rdstate() || buffer[0] == 0)
 		return false;
 	m_defendPoints = std::stoi(buffer);
 
 	in.ignore(1);
-	in.get(buffer, 50, ',');
+	in.get(buffer, 50);
+	*lineCount++;
 	if (in.rdstate() || buffer[0] == 0)
 		return false;
 	int powerupCount = std::stoi(buffer);
@@ -75,6 +82,7 @@ bool Character::load(std::ifstream & in, const Game* game)
 	{
 		char name[30] = { 0 }; // powerup names limited to 30 chars
 		in.getline(name, 30);
+		*lineCount++;
 		if (in.rdstate() || name[0] == 0)
 			return false;
 

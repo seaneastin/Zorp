@@ -13,7 +13,7 @@ public:
 	Character(Point2D position, int health, int attack, int defend);
 	~Character();
 
-virtual	bool load(std::ifstream& in, const Game* game);
+virtual	bool load(std::ifstream& in, const Game* game,int* lineCount);
 
 	void addPowerup(Powerup* pPowerup);
 

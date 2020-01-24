@@ -429,7 +429,8 @@ void Game::save()
 bool Game::load()
 {
 	std::ifstream in;
-
+	int lineCount = 0;
+	int* ptr = &lineCount;
 	in.open("zorp_savegame.txt", std::ofstream::in);
 
 	if (!in.is_open())
@@ -469,7 +470,7 @@ bool Game::load()
 	Enemy* enemies = new Enemy[enemyCount];
 	for (int i = 0; i < enemyCount; i++)
 	{
-		if (enemies[i].load(in, this) == false)
+		if (enemies[i].load(in, this,ptr) == false)
 		{
 			delete[] enemies;
 			delete[] m_tempPowerups;
@@ -479,6 +480,9 @@ bool Game::load()
 	}
 
 	// load all the food
+	//fix this later 
+	//this is not supposed to be like this
+	in.getline(buffer, 50);
 	in.getline(buffer, 50);
 	int foodCount = std::stoi(buffer);
 	if (in.rdstate() || foodCount < 0)
@@ -499,7 +503,7 @@ bool Game::load()
 
 	// load the player
 	Player player;
-	if (player.load(in, this) == false)
+	if (player.load(in, this,ptr) == false)
 	{
 		delete[] foods;
 		delete[] enemies;
