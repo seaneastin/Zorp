@@ -22,6 +22,11 @@ Room::~Room()
 
 }
 
+void Room::clearGameObject()
+{
+	m_objects.clear();
+}
+
 void Room::setPosition(Point2D position)
 {
 	m_mapPosition = position;
@@ -32,20 +37,20 @@ void Room::setType(int type)
 	m_type = type;
 }
 
-void Room::addGameObject(GameObject * object)
+void Room::addGameObject(GameObject* object)
 {
 	m_objects.push_back(object);
 	std::sort(m_objects.begin(), m_objects.end(), GameObject::compare);
 }
 
-void Room::removeGameObject(GameObject * object)
+void Room::removeGameObject(GameObject* object)
 {
 	for (auto it = m_objects.begin(); it != m_objects.end(); it++)
 	{
 		if (*it == object)
 		{
 			//reset the objects room number
-			/*(*it) -> setPosition(Point2D{ -1,-1 });*/
+			(*it)->setPosition(Point2D{ -1,-1 });
 			m_objects.erase(it);
 			return;
 		}

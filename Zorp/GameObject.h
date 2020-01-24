@@ -1,5 +1,9 @@
 #pragma once
 #include "Point2D.h"
+
+class Game;
+
+
 class GameObject
 {
 public:

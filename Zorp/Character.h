@@ -13,6 +13,8 @@ public:
 	Character(Point2D position, int health, int attack, int defend);
 	~Character();
 
+virtual	bool load(std::ifstream& in, const Game* game);
+
 	void addPowerup(Powerup* pPowerup);
 
 	virtual void draw() = 0;
@@ -26,7 +28,7 @@ public:
 
 	bool isAlive() { return (m_healthPoints > 0); }
 
-	void save(std::ofstream& out);
+void save(std::ofstream& out);
 
 protected:
 	std::vector<Powerup*> m_powerups;

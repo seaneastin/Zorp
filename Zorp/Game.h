@@ -19,6 +19,10 @@ public:
 	void update();
 	void draw();
 	bool isGameOver();
+	void save();
+	bool load();
+
+	Powerup* findPowerup(const char* name, bool isLoading = false) const;
 private:
 	bool enableVirtualTerminal();
 	void initializeMap();
@@ -33,7 +37,7 @@ private:
 
 	int getCommand();
 
-	void save();
+
 
 
 private:
@@ -51,5 +55,8 @@ private:
 
 
 	Player m_player;
+
+	int m_tempPowerupCount;
+	Powerup* m_tempPowerups; // a place to store temporary powerups during loading
 };
 

@@ -4,6 +4,7 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 
 Powerup::Powerup() : m_healthMultiplier{ 1 }, m_attackMultiplier{ 1 },
@@ -24,6 +25,69 @@ Powerup::Powerup(const char name[30], float health, float attack, float defence)
 
 Powerup::~Powerup()
 {
+
+}
+
+bool Powerup::load(std::ifstream & in, const Game * game)
+{
+	if (!in.is_open())
+		return false;
+
+	char buffer[50] = { 0 };
+
+	in.get(buffer, 50, ',');
+
+	if (in.rdstate() || buffer[0] == 0)
+		return false;
+	m_priority = std::stoi(buffer);
+
+	in.ignore(1);
+	in.get(buffer, 50, ',');
+	if (in.rdstate() || buffer[0] == 0)
+		return false;
+	m_mapPosition.x = std::stoi(buffer);
+
+	in.ignore(1);
+
+	in.get(buffer, 50, ',');
+	if (in.rdstate() || buffer[0] == 0)
+		return false;
+	m_mapPosition.y = std::stoi(buffer);
+
+	in.ignore(1);
+
+	in.get(buffer, 50, ',');
+
+	if (in.rdstate() || buffer[0] == 0)
+		return false;
+
+
+	strcpy_s(m_name, buffer);
+
+	in.ignore(1);
+	in.get(buffer, 50, ',');
+
+	if (in.rdstate() || buffer[0] == 0)
+		return false;
+
+	//these values are floats, so use stof()
+	m_healthMultiplier = std::stof(buffer);
+	in.ignore(1);
+	in.get(buffer, 50, ',');
+	if (in.rdstate() || buffer[0] == 0)
+		return false;
+	m_attackMultiplier = std::stof(buffer);
+
+	in.ignore(1);
+
+	in.getline(buffer, 50);
+
+	if (in.rdstate() || buffer[0] == 0)
+		return false;
+	m_defenceMultiplier = std::stof(buffer);
+
+	return true;
+
 
 }
 

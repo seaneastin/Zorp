@@ -8,8 +8,9 @@
 #include "Food.h"
 #include "Powerup.h"
 #include <fstream>
+#include <string>
 
-Game::Game() : m_gameOver{ false }
+Game::Game() : m_gameOver{ false } , m_tempPowerups{nullptr}
 {
 
 }
@@ -355,6 +356,12 @@ int Game::getCommand()
 			save();
 			return SAVE;
 		}
+
+		if (strcmp(input, "load") == 0)
+		{
+			load();
+			return LOAD;
+		}
 		
 
 		char next = std::cin.peek();
@@ -418,3 +425,164 @@ void Game::save()
 		std::cout << INDENT << "Your progress has not been saved." << RESET_COLOR << std::endl;
 	}
 }
+
+bool Game::load()
+{
+	std::ifstream in;
+
+	in.open("zorp_savegame.txt", std::ofstream::in);
+
+	if (!in.is_open())
+	{
+		return false;
+	}
+
+	char buffer[50] = { 0 };
+
+
+	//load all the powerups
+	if (m_tempPowerups != nullptr)
+		delete[] m_tempPowerups;
+
+	in.getline(buffer, 50);
+
+	m_tempPowerupCount = std::stoi(buffer);
+	if (in.rdstate() || m_tempPowerupCount < 0)
+		return false;
+	m_tempPowerups = new Powerup[m_tempPowerupCount];
+	for (int i = 0; i < m_tempPowerupCount; i++)
+	{
+		if (m_tempPowerups[i].load(in, this) == false)
+		{
+			delete[] m_tempPowerups;
+			m_tempPowerups = nullptr;
+			return false;
+		}
+	}
+
+	// load all the enemies
+	in.getline(buffer, 50);
+
+	int enemyCount = std::stoi(buffer);
+	if (in.rdstate() || enemyCount < 0)
+		return false;
+	Enemy* enemies = new Enemy[enemyCount];
+	for (int i = 0; i < enemyCount; i++)
+	{
+		if (enemies[i].load(in, this) == false)
+		{
+			delete[] enemies;
+			delete[] m_tempPowerups;
+			m_tempPowerups = nullptr;
+			return false;
+		}
+	}
+
+	// load all the food
+	in.getline(buffer, 50);
+	int foodCount = std::stoi(buffer);
+	if (in.rdstate() || foodCount < 0)
+		return false;
+	Food* foods = new Food[foodCount];
+	for (int i = 0; i < foodCount; i++)
+	{
+		if (foods[i].load(in, this) == false)
+		{
+			delete[] foods;
+			delete[] enemies;
+			delete[] m_tempPowerups;
+			m_tempPowerups = nullptr;
+			return false;
+		}
+		
+	}
+
+	// load the player
+	Player player;
+	if (player.load(in, this) == false)
+	{
+		delete[] foods;
+		delete[] enemies;
+		delete[] m_tempPowerups;
+		m_tempPowerups = nullptr;
+		return false;
+	}
+	// more to come
+
+
+	//everything succeeded up to here, so rebiuild the level
+
+	// clean out the rooms
+
+	for (int y = 0; y < MAZE_HEIGHT; y++)
+	{
+		for (int x = 0; x < MAZE_WIDTH; x++)
+		{
+			m_map[y][x].clearGameObject();
+		}
+	}
+
+	//add the powerups
+
+	delete[] m_powerups;
+	m_powerups = m_tempPowerups;
+	m_powerupCount = m_tempPowerupCount;
+	m_tempPowerups = nullptr;
+
+	for (int i = 0; i < m_powerupCount; i++)
+	{
+		Point2D pos = m_powerups[i].getPosition();
+		if (pos.x >= 0 && pos.y >= 0)
+			m_map[pos.y][pos.x].addGameObject(&m_powerups[i]);
+	}
+
+	//add the enemies
+	delete[] m_enemies;
+	m_enemies = enemies;
+	m_enemyCount = enemyCount;
+
+	for (int i = 0; i < m_enemyCount; i++)
+	{
+		Point2D pos = m_enemies[i].getPosition();
+		if (m_enemies->isAlive())
+			m_map[pos.y][pos.x].addGameObject(&m_enemies[i]);
+	}
+
+	//add the food
+	delete[] m_food;
+	m_food = foods;
+	m_foodCount = foodCount;
+
+	for (int i = 0; i < m_foodCount; i++)
+	{
+		Point2D pos = m_food[i].getPosition();
+		if (pos.x >= 0 && pos.y >= 0)
+			m_map[pos.y][pos.x].addGameObject(&m_food[i]);
+	}
+	m_player = player;
+
+	return true;
+}
+
+Powerup * Game::findPowerup(const char * name, bool isLoading) const
+{
+	if (isLoading == false)
+	{
+		for (int i = 0; i < m_powerupCount; i++)
+		{
+			if (strcmp(name, m_powerups[i].getName()) == 0)
+				return &m_powerups[i];
+		}
+	}
+	else
+	{
+		//when loading, search the temp array
+		for (int i = 0; i < m_tempPowerupCount; i++)
+		{
+			if (strcmp(name, m_tempPowerups[i].getName()) == 0)
+				return &m_tempPowerups[i];
+		}
+	}
+	return nullptr;
+}
+

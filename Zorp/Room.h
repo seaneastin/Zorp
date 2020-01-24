@@ -15,6 +15,8 @@ public:
 	Room();
 	~Room();
 
+	
+	void clearGameObject();
 
 	void setPosition(Point2D position);
 	void setType(int type);

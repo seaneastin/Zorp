@@ -44,6 +44,8 @@ void Player::draw()
 	std::cout << MAGENTA << "\x81" << RESET_COLOR;
 
 	std::cout << INVENTORY_OUTPUT_POS;
+	//clear any existing text
+	std::cout << CSI << "1M";
 	for (auto it = m_powerups.begin(); it < m_powerups.end(); it++)
 	{
 		std::cout << (*it)->getName() << "\t";
