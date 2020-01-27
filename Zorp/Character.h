@@ -1,8 +1,6 @@
 #pragma once
 #include "GameObject.h"
 #include <vector>
-#include <iostream>
-#include <fstream>
 
 class Powerup;
 
@@ -13,7 +11,7 @@ public:
 	Character(Point2D position, int health, int attack, int defend);
 	~Character();
 
-virtual	bool load(std::ifstream& in, const Game* game,int* lineCount);
+virtual	bool load(std::ifstream& in, const Game* game);
 
 	void addPowerup(Powerup* pPowerup);
 

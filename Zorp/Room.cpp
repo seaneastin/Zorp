@@ -1,17 +1,12 @@
 #include "pch.h"
 #include "Room.h"
-#include "Powerup.h"
-#include "Player.h"
-#include "Food.h"
-#include <iostream>
 #include "GameDefines.h"
 #include "GameObject.h"
 #include "Enemy.h"
+#include "Powerup.h"
+#include "Food.h"
+#include <iostream>
 #include <algorithm>
-
-
-
-
 
 Room::Room() : m_type(EMPTY), m_mapPosition{0, 0}
 {}
@@ -20,11 +15,6 @@ Room::Room() : m_type(EMPTY), m_mapPosition{0, 0}
 Room::~Room()
 {
 
-}
-
-void Room::clearGameObject()
-{
-	m_objects.clear();
 }
 
 void Room::setPosition(Point2D position)
@@ -56,6 +46,11 @@ void Room::removeGameObject(GameObject* object)
 			return;
 		}
 	}
+}
+
+void Room::clearGameObject()
+{
+	m_objects.clear();
 }
 
 int Room::getType()

@@ -5,7 +5,6 @@
 
 class GameObject;
 class Powerup;
-class Player;
 class Enemy;
 class Food;
 
@@ -15,27 +14,22 @@ public:
 	Room();
 	~Room();
 
-	
-	void clearGameObject();
-
 	void setPosition(Point2D position);
 	void setType(int type);
 	
 	void addGameObject(GameObject* object);
 	void removeGameObject(GameObject* object);
+	void clearGameObject();
 	
 	int getType();
-	Enemy* getEnemy();
-	Powerup* getPowerup();
-	Food* getFood();
-
-
 
 	void draw();
 	int drawDescription();
 	void lookAt();
 
-
+	Enemy* getEnemy();
+	Powerup* getPowerup();
+	Food* getFood();
 
 
 private:

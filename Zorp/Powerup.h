@@ -9,8 +9,6 @@ public:
 	Powerup(const char name[30] , float health, float attack, float defence);
 	~Powerup();
 
-	bool load(std::ifstream& in, const Game* game);
-
 	char* getName();
 	float getHealthMultiplier();
 	float getAttackMultiplier();
@@ -27,7 +25,9 @@ public:
 	void draw();
 	void drawDescription();
 	void lookAt();
+
 	virtual void save(std::ofstream& out);
+	virtual bool load(std::ifstream& in, const Game* game);
 
 private:
 	char m_name[30];

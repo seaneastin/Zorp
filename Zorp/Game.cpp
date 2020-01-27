@@ -1,14 +1,15 @@
 #include "pch.h"
 #include "Game.h"
+#include "Enemy.h"
+#include "Food.h"
+#include "Powerup.h"
 #include <iostream>
 #include <windows.h>
 #include <random>
 #include <time.h>
-#include "Enemy.h"
-#include "Food.h"
-#include "Powerup.h"
 #include <fstream>
 #include <string>
+#include <vector>
 
 Game::Game() : m_gameOver{ false } , m_tempPowerups{nullptr}
 {
@@ -421,16 +422,18 @@ void Game::save()
 	}
 	else
 	{
+		
 		std::cout << EXTRA_OUTPUT_POS << RED << "A grue has corrupted the scroll of rememberance." << std::endl;
 		std::cout << INDENT << "Your progress has not been saved." << RESET_COLOR << std::endl;
+		std::cout << INDENT << "Error save file could not be opened" << RESET_COLOR << std::endl;
 	}
+	out.flush();
+	out.close();
 }
 
 bool Game::load()
 {
 	std::ifstream in;
-	int lineCount = 0;
-	int* ptr = &lineCount;
 	in.open("zorp_savegame.txt", std::ofstream::in);
 
 	if (!in.is_open())
@@ -470,7 +473,7 @@ bool Game::load()
 	Enemy* enemies = new Enemy[enemyCount];
 	for (int i = 0; i < enemyCount; i++)
 	{
-		if (enemies[i].load(in, this,ptr) == false)
+		if (enemies[i].load(in, this) == false)
 		{
 			delete[] enemies;
 			delete[] m_tempPowerups;
@@ -483,7 +486,7 @@ bool Game::load()
 	//fix this later 
 	//this is not supposed to be like this
 	in.getline(buffer, 50);
-	in.getline(buffer, 50);
+	in.getline(buffer, 50); //delete this line when problem is fixed
 	int foodCount = std::stoi(buffer);
 	if (in.rdstate() || foodCount < 0)
 		return false;
@@ -503,7 +506,7 @@ bool Game::load()
 
 	// load the player
 	Player player;
-	if (player.load(in, this,ptr) == false)
+	if (player.load(in, this) == false)
 	{
 		delete[] foods;
 		delete[] enemies;

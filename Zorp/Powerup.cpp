@@ -28,6 +28,51 @@ Powerup::~Powerup()
 
 }
 
+void Powerup::setName(const char * pStr)
+{
+	strncpy_s(m_name, pStr, 30);
+}
+
+char * Powerup::getName()
+{
+	return m_name;
+}
+
+bool Powerup::compare(const Powerup* p1, const Powerup* p2)
+{
+	return (strcmp(p1->m_name, p2->m_name) < 0) ? true : false;
+}
+
+void Powerup::draw()
+{
+	std::cout << "[ " << YELLOW << "$" << RESET_COLOR << " ] ";
+}
+
+void Powerup::drawDescription()
+{
+	std::cout << INDENT << "There appears to be some treasure here. Perhaps you should investigate futher." << std::endl;
+}
+
+void Powerup::lookAt()
+{
+	std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "There is some treasure here. it looks small enough to pick up.";
+}
+
+void Powerup::save(std::ofstream & out)
+{
+	if (!out.is_open())
+		return;
+
+
+	out << m_priority << ",";
+	out << m_mapPosition.x << ",";
+	out << m_mapPosition.y << ",";
+	out << m_name << ",";
+	out << m_healthMultiplier << ",";
+	out << m_attackMultiplier << ",";
+	out << m_defenceMultiplier << std::endl;
+}
+
 bool Powerup::load(std::ifstream & in, const Game * game)
 {
 	if (!in.is_open())
@@ -90,70 +135,3 @@ bool Powerup::load(std::ifstream & in, const Game * game)
 
 
 }
-
-
-
-
-char * Powerup::getName()
-{
-	return m_name;
-}
-
-float Powerup::getHealthMultiplier()
-{
-	return m_healthMultiplier;
-}
-
-float Powerup::getAttackMultiplier()
-{
-	return m_attackMultiplier;
-}
-
-float Powerup::getDefenceMultiplier()
-{
-	return m_defenceMultiplier;
-}
-
-void Powerup::setName(const char * pStr)
-{
-	strncpy_s(m_name, pStr, 30);
-}
-
-bool Powerup::compare(const Powerup* p1, const Powerup* p2)
-{
-	return (strcmp(p1->m_name, p2->m_name) < 0) ? true : false;
-}
-
-void Powerup::draw()
-{
-	std::cout << "[ " << YELLOW << "$" << RESET_COLOR << " ] ";
-}
-
-void Powerup::drawDescription()
-{
-	std::cout << INDENT << "There appears to be some treasure here. Perhaps you should investigate futher." << std::endl;
-}
-
-
-
-void Powerup::lookAt()
-{
-	std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "There is some treasure here. it looks small enough to pick up.";
-}
-
-void Powerup::save(std::ofstream & out)
-{
-	if (!out.is_open())
-		return;
-
-
-	out << m_priority << ",";
-	out << m_mapPosition.x << ",";
-	out << m_mapPosition.y << ",";
-	out << m_name << ",";
-	out << m_healthMultiplier << ",";
-	out << m_attackMultiplier << ",";
-	out << m_defenceMultiplier << std::endl;
-}
-
-

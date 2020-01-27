@@ -24,11 +24,6 @@ Player::~Player()
 }
 
 
-
-
-
-
-
 void Player::draw()
 {
 	Point2D outPos =
@@ -51,6 +46,70 @@ void Player::draw()
 		std::cout << (*it)->getName() << "\t";
 	}
 
+}
+
+void Player::drawDescription()
+{
+
+}
+
+void Player::lookAt()
+{
+	std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "Hmm, I look good!" << std::endl;
+}
+
+void Player::executeCommand(int command, Room* pRoom)
+{
+
+	switch (command)
+	{
+	case EAST:
+		if (m_mapPosition.x < MAZE_WIDTH - 1)
+			m_mapPosition.x++;
+		return;
+	case WEST:
+		if (m_mapPosition.x > 0)
+			m_mapPosition.x--;
+		return;
+	case NORTH:
+		if (m_mapPosition.y > 0)
+			m_mapPosition.y--;
+		return;
+	case SOUTH:
+		if (m_mapPosition.y < MAZE_HEIGHT - 1)
+			m_mapPosition.y++;
+		return;
+	case LOOK:
+		pRoom->lookAt();
+		break;
+
+	case FIGHT:
+		attack(pRoom->getEnemy());
+		break;
+	case PICKUP:
+		pickup(pRoom);
+		break;
+
+	case SAVE:
+	case LOAD:
+		//handled by the system before we get here.
+		//no need to process these commands
+		break;
+
+	default:
+		//the direction was not valid
+		//do nothing, go back to the top of the loop and ask again
+		std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You try, but you just can't do it." << std::endl;
+
+
+		break;
+	}
+
+
+	std::cout << INDENT << "Press 'Enter' to continue.";
+	std::cin.clear();
+	std::cin.ignore(std::cin.rdbuf()->in_avail());
+	std::cin.get();
 }
 
 void Player::pickup(Room * pRoom)
@@ -113,67 +172,4 @@ void Player::attack(Enemy * pEnemy)
 }
 
 
-void Player::executeCommand(int command, Room* pRoom)
-{
-
-	switch (command)
-	{
-	case EAST:
-		if (m_mapPosition.x < MAZE_WIDTH - 1)
-			m_mapPosition.x++;
-		return;
-	case WEST:
-		if (m_mapPosition.x > 0)
-			m_mapPosition.x--;
-		return;
-	case NORTH:
-		if (m_mapPosition.y > 0)
-			m_mapPosition.y--;
-		return;
-	case SOUTH:
-		if (m_mapPosition.y < MAZE_HEIGHT - 1)
-			m_mapPosition.y++;
-		return;
-	case LOOK:
-		pRoom->lookAt();
-		break;
-
-	case FIGHT:
-		attack(pRoom->getEnemy());
-		break;
-	case PICKUP:
-		pickup(pRoom);
-		break;
-
-	case SAVE:
-	case LOAD:
-		//handled by the system before we get here.
-		//no need to process these commands
-		break;
-
-	default:
-		//the direction was not valid
-		//do nothing, go back to the top of the loop and ask again
-		std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "You try, but you just can't do it." << std::endl;
-
-		
-		break;
-		}
-
-	
-	std::cout << INDENT << "Press 'Enter' to continue.";
-	std::cin.clear();
-	std::cin.ignore(std::cin.rdbuf()->in_avail());
-	std::cin.get();
-}
-
-void Player::drawDescription()
-{
-
-}
-
-void Player::lookAt()
-{
-	std::cout << EXTRA_OUTPUT_POS << RESET_COLOR << "Hmm, I look good!" << std::endl;
-}
 

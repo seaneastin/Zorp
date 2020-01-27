@@ -3,12 +3,13 @@
 #include "GameDefines.h"
 
 
-GameObject::GameObject()
+GameObject::GameObject() : m_mapPosition{ 0, 0 }, m_priority{ PRIORITY_DEFAULT }
 {
 }
 
-GameObject::GameObject(Point2D position)
+GameObject::GameObject(Point2D position) : m_mapPosition{ position }
 {
+
 }
 
 
